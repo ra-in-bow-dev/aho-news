@@ -26,9 +26,9 @@
         Block,
         BlockHeader,
         Preloader
-    } from 'framework7-svelte';
-    import { pluralize } from '../utils';
-    import Comment from '../components/Comment.svelte';
+    } from 'framework7-svelte'
+    import { pluralize } from '../helpers/utils'
+    import Comment from '../components/Comment.svelte'
 
     export let item;
     let comments;
@@ -36,11 +36,6 @@
 
   $: getStory(id);
   
-  async function getStory(id) {
-        const res = await fetch(`https://node-hnapi.herokuapp.com/item/${id}`);
-        const data = await res.json();
-        comments = (comments) ? [] : data.comments;
-    }
 </script>
 <style>
 :global(.view-master-detail .navbar-master-detail-root .link.back, .view-master-detail .page-master-detail-root .navbar .link.back) {

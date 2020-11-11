@@ -40,7 +40,7 @@
     SwipeoutActions,
     SwipeoutButton
   } from 'framework7-svelte';
-  import { pluralize } from '../utils';
+  import { pluralize } from '../helpers/utils';
   
   let page = 1;
   let items;
@@ -51,13 +51,6 @@
   $: getStories(page);
   $: showPreloader = (items) ? (items.length < 299) ? true : false : false;
 
-  async function getStories(page) {
-        const res = await fetch(`https://node-hnapi.herokuapp.com/news?page=${page}`);
-        const data = await res.json();
-        items = (items) ? items.concat(data) : data;
-        allowInfinite = true
-    }
-  
   function loadMore() {
     if (!allowInfinite) return;
     allowInfinite = false;

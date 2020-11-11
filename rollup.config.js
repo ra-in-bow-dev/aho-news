@@ -1,34 +1,36 @@
-import svelte from 'rollup-plugin-svelte';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import livereload from 'rollup-plugin-livereload';
-import { terser } from 'rollup-plugin-terser';
-import postcss from 'rollup-plugin-postcss';
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import typescriptPlugin from '@rollup/plugin-typescript'
+import svelte from 'rollup-plugin-svelte'
+import livereload from 'rollup-plugin-livereload'
+import { terser } from 'rollup-plugin-terser'
+import sveltePreprocess from 'svelte-preprocess'
+import styles from "rollup-plugin-styles"
 
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-	input: 'src/main.js',
+	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
 		format: 'iife',
 		name: 'app',
-		file: 'docs/build/bundle.js'
+		file: 'static/bundle.js'
 	},
 	plugins: [
+		styles(),
 		svelte({
 			// enable run-time checks when not in production
 			dev: !production,
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
 			css: css => {
-				css.write('docs/build/bundle.css');
-			}
+				css.write('bundle.css');
+			},
+			preprocess: sveltePreprocess()
 		}),
 
-		postcss({
-			plugins: [],
-		}),
+		// postcss(postcssConfig),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In
@@ -40,6 +42,7 @@ export default {
 			dedupe: ['svelte']
 		}),
 		commonjs(),
+		typescriptPlugin({ sourceMap: !production }),
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
@@ -47,7 +50,7 @@ export default {
 
 		// Watch the `docs` directory and refresh the
 		// browser on changes when not in production
-		!production && livereload('docs'),
+		!production && livereload('static'),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
@@ -65,7 +68,7 @@ function serve() {
 		writeBundle() {
 			if (!started) {
 				started = true;
-
+				// eslint-disable-next-line @typescript-eslint/no-var-requires
 				require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
 					stdio: ['ignore', 'inherit', 'inherit'],
 					shell: true

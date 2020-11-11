@@ -4,12 +4,12 @@
   <View main class="safe-areas" url="/" masterDetailBreakpoint={800} />
 
 </App>
+
 <script>
   import {
     App,
     View,
   } from 'framework7-svelte';
-
   import routes from './routes';
 
   // Framework7 Parameters

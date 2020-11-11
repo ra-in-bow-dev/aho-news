@@ -1,7 +1,7 @@
-import StoriesPage from './pages/stories.svelte';
-import StoryPage from './pages/story.svelte';
+import StoriesPage from './pages/stories.svelte'
+import StoryPage from './pages/story.svelte'
 
-var routes = [
+export default [
   {
     path: '/',
     component: StoriesPage,
@@ -13,6 +13,4 @@ var routes = [
       },
     ]
   },
-];
-
-export default routes;
+]
