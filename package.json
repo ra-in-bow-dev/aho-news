@@ -1,6 +1,6 @@
 {
-  "name": "hackernews7-svelte",
-  "version": "1.0.0",
+  "name": "aho-news",
+  "version": "0.0.1",
   "scripts": {
     "validate": "svelte-check && tsc --noEmit",
     "svelte-check": "svelte-check",
@@ -21,7 +21,6 @@
     "less": "^3.12.2",
     "prettier": "^2.1.2",
     "prettier-plugin-svelte": "^1.4.1",
-    "purgecss-from-svelte": "^2.0.2",
     "rollup": "^2.33.1",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",

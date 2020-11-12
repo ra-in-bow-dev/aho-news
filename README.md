@@ -1,18 +1,20 @@
-HackerNews7
+AHO News
 ===========
 
-Another Hacker News Reader powered by [Framework7](https://github.com/nolimits4web/Framework7) and [Svelte](https://svelte.dev/)
+Hacker News Reader-like in-browser p2p app powered by:
+
+ - [Framework7](https://github.com/nolimits4web/Framework7)
+ - [Svelte](https://svelte.dev/)
+ - [Switchboard.js](https://github.com/shadowmoose/switchboard.js)
+ - [Rollup](https://rollupjs.org)
+ - [Typescript](https://www.typescriptlang.org)
 
 About
 -----
-This is a demo app to show how [Framework7](https://github.com/nolimits4web/Framework7) makes it easy to develop hybrid apps.
+This is a simple p2p app for community microblogging.
 
 Features
 --------
-
-Framework7-svelte v5 features demonstrate in this app.
-
-This demo is developped using [Rollup](http://framework7.io/cli/).
 
 ## stories.svelte
 
@@ -32,12 +34,12 @@ This demo is developped using [Rollup](http://framework7.io/cli/).
 PWA
 ---
 
-![LightHouse Score](https://github.com/GuillaumeBiton/hackernews7-svelte/raw/master/lighthouse-pwa-score.png)
+![LightHouse Score](https://github.com/ra-in-bow-dev/aho-news/raw/master/lighthouse-pwa-score.png)
 
 License
 -------
 
-Licensed under the [MIT License](https://github.com/GuillaumeBiton/HackerNews7/raw/master/LICENSE)
+Licensed under the [MIT License](https://github.com/ra-in-bow-dev/aho-news/raw/master/LICENSE)
 
 Thanks
 ------

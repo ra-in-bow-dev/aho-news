@@ -1,15 +1,15 @@
-import StoriesPage from './pages/stories.svelte'
-import StoryPage from './pages/story.svelte'
+import RoomPage from './pages/room.svelte'
+import ThreadPage from './pages/thread.svelte'
 
 export default [
   {
     path: '/',
-    component: StoriesPage,
+    component: RoomPage,
     master: true,
     detailRoutes: [
       {
-        path: '/item/:id',
-        component: StoryPage,
+        path: '/thread/:id',
+        component: ThreadPage,
       },
     ]
   },

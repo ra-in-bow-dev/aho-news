@@ -1,4 +1,4 @@
-const cacheName = 'hackernews7-' + Date.now();
+const cacheName = 'ahonews-' + Date.now();
 const filesToCache = [
   './',
   'manifest.json',

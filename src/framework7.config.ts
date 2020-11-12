@@ -38,8 +38,8 @@ import InfiniteScroll from 'framework7/components/infinite-scroll/infinite-scrol
 // import DataTable from 'framework7/components/data-table/data-table';
 // import Fab from 'framework7/components/fab/fab';
 // import Searchbar from 'framework7/components/searchbar/searchbar';
-// import Messages from 'framework7/components/messages/messages';
-// import Messagebar from 'framework7/components/messagebar/messagebar';
+import Messages from 'framework7/components/messages/messages';
+import Messagebar from 'framework7/components/messagebar/messagebar';
 // import Swiper from 'framework7/components/swiper/swiper';
 // import PhotoBrowser from 'framework7/components/photo-browser/photo-browser';
 // import Notification from 'framework7/components/notification/notification';
@@ -50,7 +50,7 @@ import InfiniteScroll from 'framework7/components/infinite-scroll/infinite-scrol
 // import Menu from 'framework7/components/menu/menu';
 // import ColorPicker from 'framework7/components/color-picker/color-picker';
 // import Treeview from 'framework7/components/treeview/treeview';
-// import TextEditor from 'framework7/components/text-editor/text-editor';
+import TextEditor from 'framework7/components/text-editor/text-editor';
 // import Elevation from 'framework7/components/elevation/elevation';
 // import Typography from 'framework7/components/typography/typography';
 
@@ -93,8 +93,8 @@ Framework7.use([
   // DataTable,
   // Fab,
   // Searchbar,
-  // Messages,
-  // Messagebar,
+  Messages,
+  Messagebar,
   // Swiper,
   // PhotoBrowser,
   // Notification,
@@ -105,7 +105,7 @@ Framework7.use([
   // Menu,
   // ColorPicker,
   // Treeview,
-  // TextEditor,
+  TextEditor,
   // Elevation,
   // Typography,
 ]);

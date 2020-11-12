@@ -1,9 +1,9 @@
 {
-    "name": "hackernews7",
-    "short_name": "hn7",
-    "description": "Framework7 HackerNews web app",
+    "name": "aho-news",
+    "short_name": "ahows",
+    "description": "AHO-driven media",
     "lang": "en-US",
-    "start_url": "/hackernews7-svelte/",
+    "start_url": "/aho-news/",
     "display": "standalone",
     "background_color": "#FF6B22",
   "theme_color": "#FF6B22",
