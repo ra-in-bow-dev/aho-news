@@ -5,12 +5,12 @@ export default [
   {
     path: '/',
     component: RoomPage,
-    master: true,
-    detailRoutes: [
-      {
-        path: '/thread/:id',
-        component: ThreadPage,
-      },
-    ]
   },
+  {
+    path: '/thread/:threadId',
+    component: ThreadPage,
+    options: {
+      transition: 'f7-push',
+    }
+  }
 ]

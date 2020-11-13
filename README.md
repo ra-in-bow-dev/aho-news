@@ -16,20 +16,16 @@ This is a simple p2p app for community microblogging.
 Features
 --------
 
-## stories.svelte
+## room.svelte
 
-- [Infinite scroll](https://framework7.io/svelte/page.html#infinite-scroll)
 - [Preloader](https://framework7.io/svelte/preloader.html)
-- [SwipeOut](https://framework7.io/svelte/swipeout.html)
+- [Cards](https://framework7.io/svelte/cards.html)
 - [Master-Detail](https://framework7.io/docs/view.html#master-detail)
 
-## story.svelte
+## thread.svelte
 
-- [Preloader](https://framework7.io/svelte/preloader.html)
-
-## components/Comment.svelte
-
-- [svelte:self](https://svelte.dev/docs#svelte_self)
+- [Messages](https://framework7.io/svelte/messages.html)
+- [Messagebar](https://framework7.io/svelte/messagebar.html)
 
 PWA
 ---

@@ -4,10 +4,10 @@ const filesToCache = [
   'manifest.json',
   'index.html',
   'global.css',
-  'build/bundle.css',
-  'build/bundle.css.map',
-  'build/bundle.js',
-  'build/bundle.js.map',
+  'bundle.css',
+  'bundle.css.map',
+  'bundle.js',
+  'bundle.js.map',
   'favicon.png',
   'apple-touch-icon.png'
 ];

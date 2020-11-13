@@ -11,7 +11,7 @@ import Framework7, { Device, Request, Utils } from 'framework7/framework7-lite.e
 import Preloader from 'framework7/components/preloader/preloader';
 // import Progressbar from 'framework7/components/progressbar/progressbar';
 // import Sortable from 'framework7/components/sortable/sortable';
-import Swipeout from 'framework7/components/swipeout/swipeout';
+// import Swipeout from 'framework7/components/swipeout/swipeout';
 // import Accordion from 'framework7/components/accordion/accordion';
 // import ContactsList from 'framework7/components/contacts-list/contacts-list';
 // import VirtualList from 'framework7/components/virtual-list/virtual-list';
@@ -19,7 +19,7 @@ import Swipeout from 'framework7/components/swipeout/swipeout';
 // import Timeline from 'framework7/components/timeline/timeline';
 // import Tabs from 'framework7/components/tabs/tabs';
 // import Panel from 'framework7/components/panel/panel';
-// import Card from 'framework7/components/card/card';
+import Card from 'framework7/components/card/card';
 // import Chip from 'framework7/components/chip/chip';
 // import Form from 'framework7/components/form/form';
 // import Input from 'framework7/components/input/input';
@@ -50,7 +50,7 @@ import Messagebar from 'framework7/components/messagebar/messagebar';
 // import Menu from 'framework7/components/menu/menu';
 // import ColorPicker from 'framework7/components/color-picker/color-picker';
 // import Treeview from 'framework7/components/treeview/treeview';
-import TextEditor from 'framework7/components/text-editor/text-editor';
+// import TextEditor from 'framework7/components/text-editor/text-editor';
 // import Elevation from 'framework7/components/elevation/elevation';
 // import Typography from 'framework7/components/typography/typography';
 
@@ -66,7 +66,7 @@ Framework7.use([
   Preloader,
   // Progressbar,
   // Sortable,
-  Swipeout,
+  // Swipeout,
   // Accordion,
   // ContactsList,
   // VirtualList,
@@ -74,7 +74,7 @@ Framework7.use([
   // Timeline,
   // Tabs,
   // Panel,
-  // Card,
+  Card,
   // Chip,
   // Form,
   // Input,
@@ -105,7 +105,7 @@ Framework7.use([
   // Menu,
   // ColorPicker,
   // Treeview,
-  TextEditor,
+  // TextEditor,
   // Elevation,
   // Typography,
 ]);
