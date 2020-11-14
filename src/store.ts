@@ -3,12 +3,12 @@ import type { ConnectedPeer, SBClientOptions, Switchboard as SBType } from 'swit
 import { Switchboard } from 'switchboard.js'
 
 export interface Message {
-    id: string,         // message id
+    id?: string,        // FIXME: who is generating message id?
     type: string,       // can be: image audio video text fix aho rate
     body: string,       // code to inject
-    rate: number,       // points of respect
+    rate?: number,      // points of respect
     reply_to?: string,  // other message id
-    timestamp?: number, // FIXME
+    timestamp?: number, // on message dynamic stamp
     from?: string       // author peer id
 }
 

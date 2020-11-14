@@ -1,7 +1,4 @@
 <Page name="room">
-  <Navbar>
-    <NavTitle>AHONEWS</NavTitle>
-  </Navbar>
   {#if showPreloader}
     <div style="margin: 47%;">
       <Preloader color="multi" style="background: #fff;" />
@@ -21,22 +18,28 @@
         </Card>
       </a>
     {/each}
+    {#if showMessagebox}
+      <Messagebox />
+    {/if}
   {/if}
 </Page>
 
 <script lang='ts'>
   import { threads } from '../store'
   import {
-    Navbar,
-    NavTitle,
+    // Appbar,
+    Link,
     Page,
     Card,
     CardContent,
     Preloader
   } from 'framework7-svelte'
+  import Messagebox from '../components/Messagebox.svelte'
 
   // TODO: pagination with infinite scrolling
 
   let showPreloader: boolean = false
+  let showMessagebox: boolean = false
   $: showPreloader = !!$threads
-</script>
+
+ </script>
