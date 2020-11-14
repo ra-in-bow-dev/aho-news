@@ -5,8 +5,8 @@
     "lang": "en-US",
     "start_url": "/aho-news/",
     "display": "standalone",
-    "background_color": "#FF6B22",
-  "theme_color": "#FF6B22",
+    "background_color": "#fff",
+  "theme_color": "#fff",
   "icons": [
     {
       "src": "/static/icons/128x128.png",
