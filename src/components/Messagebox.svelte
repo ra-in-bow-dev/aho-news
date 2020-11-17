@@ -94,11 +94,15 @@
     if (text.length + attachments.length > 0) {
       // there is something to send
       let messagesToSend: Array<Message> = []
-      attachments.forEach((body: string) => messagesToSend.push({ type: 'image', body, reply_to }))
+      attachments.forEach(
+        (body: string) => messagesToSend.push({ type: 'image', body, reply_to })
+        )
       messagesToSend.push({ type: 'text', body: text, reply_to })
       messagebarInstance.focus()
       messagesToSend.forEach((msg: Message) => {
-        $peers.forEach((peer: ConnectedPeer, _peerId: string) => peer.send(JSON.stringify(msg)))
+        $peers.forEach(
+          (peer: ConnectedPeer, _peerId: string) => peer.send(JSON.stringify(msg))
+          )
       })
     }
   }
