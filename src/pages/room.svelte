@@ -1,6 +1,6 @@
 <Page name="room">
   {#if showPreloader}
-    <Block class="justify-content-center">
+    <Block style="margin-left: 47%;">
       <Preloader color="multi" style="background: #fff;" />
     </Block>
   {:else}

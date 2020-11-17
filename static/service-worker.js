@@ -3,7 +3,7 @@ const filesToCache = [
   './',
   'manifest.json',
   'index.html',
-  'global.css',
+  // 'global.css',
   'bundle.css',
   'bundle.css.map',
   'bundle.js',
