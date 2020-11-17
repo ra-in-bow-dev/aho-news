@@ -8,8 +8,8 @@ const filesToCache = [
   'bundle.css.map',
   'bundle.js',
   'bundle.js.map',
-  'favicon.png',
-  'apple-touch-icon.png'
+  'icons/favicon.png',
+  'icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', e => {

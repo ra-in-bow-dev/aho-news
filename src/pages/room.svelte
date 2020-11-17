@@ -1,8 +1,8 @@
 <Page name="room">
   {#if showPreloader}
-    <div style="margin: 47%;">
+    <Block class="justify-content-center">
       <Preloader color="multi" style="background: #fff;" />
-    </div>
+    </Block>
   {:else}
     {#each $threads as msg}
       <a href="/thread/{msg.id}">
@@ -28,6 +28,7 @@
   import { threads } from '../store'
   import {
     // Appbar,
+    Block,
     Link,
     Page,
     Card,

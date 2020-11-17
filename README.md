@@ -11,7 +11,7 @@ Hacker News Reader-like in-browser p2p app powered by:
 
 About
 -----
-This is a simple p2p app for community microblogging.
+This is a simple p2p community messageboard.
 
 Features
 --------
