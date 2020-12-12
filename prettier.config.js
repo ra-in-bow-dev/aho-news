@@ -3,7 +3,7 @@ module.exports = {
     semi: false,
     singleQuote: true,
     trailingComma: "es5",
-    svelteSortOrder: "styles-markup-scripts",
+    svelteSortOrder: "scripts-markup-styles",
     svelteStrictMode: true,
     svelteBracketNewLine: true,
     svelteAllowShorthand: false,

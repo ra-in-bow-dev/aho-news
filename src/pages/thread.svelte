@@ -64,6 +64,9 @@
   // TODO: fixes on view
   // TODO: rates on view
 
+  // NOTE: uses 'master-detail' as detail route
+  // see 
+
   let allReplied: Map<string, Message> = new Map()
 
   const isLastMessage = (msg: Message): boolean => {

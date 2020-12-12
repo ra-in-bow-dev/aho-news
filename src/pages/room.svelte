@@ -1,8 +1,15 @@
 <Page name="room">
+  {#if showMessagebox}
+    <Messagebox />
+  {:else}
+    <div style="margin-left: 47%;">
+      <Icon f7="message" size="44px" on:click={ () => showMessagebox = true } />
+    </div>
+  {/if}
   {#if showPreloader}
-    <Block style="margin-left: 47%;">
+    <div style="margin-left: 47%;">
       <Preloader color="multi" style="background: #fff;" />
-    </Block>
+    </div>
   {:else}
     {#each $threads as msg}
       <a href="/thread/{msg.id}">
@@ -18,18 +25,14 @@
         </Card>
       </a>
     {/each}
-    {#if showMessagebox}
-      <Messagebox />
-    {/if}
   {/if}
+
 </Page>
 
 <script lang='ts'>
   import { threads } from '../store'
   import {
-    // Appbar,
-    Block,
-    Link,
+    Icon,
     Page,
     Card,
     CardContent,
@@ -38,6 +41,8 @@
   import Messagebox from '../components/Messagebox.svelte'
 
   // TODO: pagination with infinite scrolling
+
+  // NOTE: uses 'master-detail' pattern as master route
 
   let showPreloader: boolean = false
   let showMessagebox: boolean = false

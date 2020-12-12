@@ -35,7 +35,7 @@ PWA
 License
 -------
 
-Licensed under the [MIT License](https://github.com/ra-in-bow-dev/aho-news/raw/master/LICENSE)
+Licensed under the [CC BY-NC](https://creativecommons.org/licenses/by-nc/2.0/)
 
 Thanks
 ------

@@ -1,7 +1,7 @@
 {
     "name": "aho-news",
     "short_name": "ahows",
-    "description": "AHO-driven media",
+    "description": "Aho!-driven media",
     "lang": "en-US",
     "start_url": "/aho-news/",
     "display": "standalone",
