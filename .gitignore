@@ -1,5 +1,7 @@
-node_modules/
-.DS_Store
+.build
+build
+web_modules
+node_modules
+*.DS_Store
 pnpm-lock.yaml
-yarn.lock
-static/bundle.*
+public/bundle.*

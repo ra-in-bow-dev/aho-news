@@ -1,52 +1,35 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+import svelte from 'rollup-plugin-svelte'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-import typescriptPlugin from '@rollup/plugin-typescript'
 import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
-import postcss from 'rollup-plugin-postcss'
-import svelte from 'rollup-plugin-svelte'
 import sveltePreprocess from 'svelte-preprocess'
+import typescript from '@rollup/plugin-typescript'
+import postcss from 'rollup-plugin-postcss'
 
+const postcssConfig = require('./postcss.config')
 const dev = process.env.ROLLUP_WATCH
-const preprocessConfig = require('./svelte.config.js').config
-const preprocess = sveltePreprocess(preprocessConfig)
+
 export default {
-	input: 'src/main.ts',
+	input: 'src/index.ts',
 	output: {
 		sourcemap: dev,
 		format: 'iife',
-		name: 'bundle',
-		file: 'static/bundle.js'
+		name: 'app',
+		file: 'public/bundle.js'
 	},
 	plugins: [
-		svelte({ preprocess }),
+		svelte({
+			emitCss: false,
+			compilerOptions: { css: false }, // o => o.write('public/bundle.css') },
+			preprocess: sveltePreprocess(), //{ postcss: { extract: 'public/bundle.css' } })
+		}),
+		postcss({ ...postcssConfig, extract: 'bundle.css' }),
 		resolve({ browser: true, dedupe: ['svelte'] }),
-		commonjs({ transformMixedEsModules: true, }),
-		typescriptPlugin(),
-		postcss(),
-		dev && serve(),
-		dev && livereload('static'),
+		commonjs(),
+		typescript({ sourceMap: !!dev }),
+		dev && livereload('public'),
 		!dev && terser()
 	],
-	watch: {
-		clearScreen: false
-	}
-};
-
-function serve() {
-	let started = false;
-
-	return {
-		writeBundle() {
-			if (!started) {
-				started = true;
-				// eslint-disable-next-line @typescript-eslint/no-var-requires
-				require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
-					stdio: ['ignore', 'inherit', 'inherit'],
-					shell: true
-				});
-			}
-		}
-	};
+	watch: { clearScreen: false }
 }

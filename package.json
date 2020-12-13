@@ -1,40 +1,37 @@
 {
   "name": "aho-news",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "license": "CC-BY-NC",
   "scripts": {
-    "validate": "svelte-check && tsc --noEmit",
-    "svelte-check": "svelte-check",
+    "watch": "rollup -c -w",
     "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "start": "sirv static -H 0.0.0.0"
+    "serve": "sirv public --cors --single",
+    "serve:dev": "npm run serve --dev",
+    "dev": "run-p watch serve:dev",
+    "start": "run-p build serve"
+  },
+  "dependencies": {
+    "switchboard.js": "^1.0.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-typescript": "^8.0.0",
     "@tsconfig/svelte": "^1.0.10",
-    "@types/postcss-less": " ^4.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.9.1",
-    "@typescript-eslint/parser": "^4.9.1",
-    "autoprefixer": "^10.1.0",
-    "browserslist": "^4.16.0",
-    "cssnano": "^4.1.10",
+    "autoprefixer": "^9",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-svelte3": "^2.7.3",
-    "less": "^3.12.2",
-    "postcss": "^8.2.1",
-    "postcss-custom-media": "^7.0.8",
-    "postcss-less": "^4.0.0",
-    "postcss-load-config": "^3.0.0",
-    "postcss-nested": "^5.0.3",
-    "postcss-normalize": "^9.0.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^7",
+    "postcss-load-config": "^2",
     "prettier": "^2.2.1",
     "prettier-plugin-svelte": "^1.4.2",
     "rollup": "^2.34.2",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "sirv-cli": "^1.0.10",
@@ -42,15 +39,7 @@
     "svelte-check": "^1.1.21",
     "svelte-hmr": "^0.12.0",
     "svelte-preprocess": "^4.6.1",
-    "tslib": "^2.0.3",
-    "typescript": "^4.1.3"
-  },
-  "dependencies": {
-    "framework7": "^5.7.14",
-    "framework7-svelte": "^5.7.14",
-    "switchboard.js": "^1.0.0"
-  },
-  "browserslist": [
-    "last 2 versions"
-  ]
+    "tslib": "^2.0.0",
+    "typescript": "next"
+  }
 }

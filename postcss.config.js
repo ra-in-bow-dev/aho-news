@@ -1,15 +1,2 @@
-module.exports = {
-    plugins: {
-      "postcss-nested": {},
-      "postcss-normalize": {},
-      "postcss-custom-media": {
-        preserve: false,
-        importFrom: "src/styles/breakpoints.ts",
-      },
-      autoprefixer: {},
-      cssnano: {
-        preset: "default",
-      },
-    },
-  };
-  
+// Taken from: https://tailwindcss.com/docs/installation#using-tailwind-with-postcss
+module.exports = { minify: true, plugins: [require('tailwindcss')] }

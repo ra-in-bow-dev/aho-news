@@ -1,36 +1,16 @@
 AHO News
 ===========
 
-Hacker News Reader-like in-browser p2p app powered by:
+This is a simple one-room community messageboard and in-browser p2p app.
 
- - [Framework7](https://github.com/nolimits4web/Framework7)
- - [Svelte](https://svelte.dev/)
- - [Switchboard.js](https://github.com/shadowmoose/switchboard.js)
- - [Rollup](https://rollupjs.org)
- - [Typescript](https://www.typescriptlang.org)
+Powered by
+----------
 
-About
------
-This is a simple p2p community messageboard.
-
-Features
---------
-
-## room.svelte
-
-- [Preloader](https://framework7.io/svelte/preloader.html)
-- [Cards](https://framework7.io/svelte/cards.html)
-- [Master-Detail](https://framework7.io/docs/view.html#master-detail)
-
-## thread.svelte
-
-- [Messages](https://framework7.io/svelte/messages.html)
-- [Messagebar](https://framework7.io/svelte/messagebar.html)
-
-PWA
----
-
-![LightHouse Score](https://github.com/ra-in-bow-dev/aho-news/raw/master/lighthouse-pwa-score.png)
+ - [TailwindCSS](https://tailwindcss.com) UI framework
+ - [Svelte](https://svelte.dev/) components compiler
+ - [Switchboard.js](https://github.com/shadowmoose/switchboard.js) p2p network
+ - [Rollup](https://rollupjs.org) bundler
+ - [Typescript](https://www.typescriptlang.org) type control
 
 License
 -------
