@@ -2,7 +2,10 @@
 import type { Message } from "../store/message"
 import { seens } from '../store/session'
 
-let showDetails:boolean = false
+// these two params are used to switch
+let showDetails: boolean = false
+// between css classes
+export let mode: string = 'bar' // letter card full
 
 // TODO: implement a few states:
 // - in-chat view 
@@ -28,7 +31,7 @@ const chatWith = (bob: string) => {
 
 <div class="min-w-screen min-h-screen bg-gray-200 flex items-center justify-center px-5 py-5">
     <div class="w-full mx-auto rounded-lg bg-white shadow p-5 text-gray-800" style="max-width: 400px">
-        <div class="w-full flex mb-4">
+        <div class="w-full flex mb-4" class:hidden={!showDetails}>
             <div class="overflow-hidden rounded-full w-12 h-12">
                 <img src={$seens.get(message.from).userpic} alt="someone">
             </div>

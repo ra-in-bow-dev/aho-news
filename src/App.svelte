@@ -124,9 +124,9 @@
       {/if}
       {/each}
     </div>
-    <div class="chatlog">
-      {#each processedMessages as m}
-        <MessageView message={m}>
+    <div class="messages">
+      {#each $threads as m}
+        <MessageView message={m} mode='bar'>
           {#if m.type === 'image'}
             <img src={m.body} alt='pic' />
           {:else}
