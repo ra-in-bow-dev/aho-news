@@ -1,125 +1,58 @@
-<Messagebar
-  placeholder="Type something.."
-  bind:this="{messagebarComponent}"
-  attachmentsVisible="{attachmentsVisible}"
-  sheetVisible="{sheetVisible}"
-  value="{messageText}"
-  onInput="{(e) => (messageText = e.target.value)}"
->
-  <a
-    class="link icon-only"
-    slot="inner-start"
-    href="{''}"
-    on:click="{() => (sheetVisible = !sheetVisible)}"
-  >
-    <Icon
-      ios="f7:camera_fill"
-      aurora="f7:camera_fill"
-      md="material:camera_alt"
-    />
-  </a>
-  <a
-    href="{''}"
-    class="link icon-only"
-    slot="inner-end"
-    on:click="{sendMessage}"
-  >
-    <Icon
-      ios="f7:arrow_up_circle_fill"
-      aurora="f7:arrow_up_circle_fill"
-      md="material:send"
-    />
-  </a>
-
-  <MessagebarAttachments>
-    {#each attachments as image, index (index)}
-      <MessagebarAttachment
-        key="{index}"
-        image="{image}"
-        onAttachmentDelete="{() => deleteAttachment(image)}"
-      />
-    {/each}
-  </MessagebarAttachments>
-
-  <MessagebarSheet>
-    {#each images as image, index (index)}
-      <MessagebarSheetImage
-        key="{index}"
-        image="{image}"
-        checked="{attachments.indexOf(image) >= 0}"
-        onChange="{handleAttachment}"
-      />
-    {/each}
-  </MessagebarSheet>
-</Messagebar>
 <script lang="ts">
-  
-  import {
-        f7,
-        f7ready,
-        Messagebar,
-        MessagebarAttachment,
-        MessagebarAttachments,
-        MessagebarSheet,
-        MessagebarSheetImage,
-        Icon
-    } from 'framework7-svelte'
-  import { onMount } from 'svelte'
-  import { peers } from '../store'
-  import type { Message } from '../store'
-  import type { ConnectedPeer } from 'switchboard.js'
-  
-  let sheetVisible: boolean = false
-  let attachmentsVisible
-  let responseInProgress: boolean = false
-  let messagebarComponent
-  let messagebarInstance
-  let attachments = []
-  let images = []
-  let messageText = ''
-  let placeholder = 'Message'
+import { peers, seens, Session, messages } from '../store/session'
+import type { Message } from '../store/message'
+import { hash } from 'spark-md5'
+import { connection } from '../store/network'
 
-  export let reply_to
+export let message: Message
+let element
 
-  $: attachmentsVisible = attachments.length > 0
-  $: placeholder = attachments.length > 0 ? 'Add comment or Send' : 'Message'
+// generating message id here!
+const getID = (ss: string[]) => hash(ss.join('') + Math.random().toString())
 
-  const sendMessage = (_ev) => {
-    if (responseInProgress) return
-    responseInProgress = true
-    sheetVisible = false
-    messageText = ''
-    const text: string = messageText.replace(/\n/g, '<br>').trim()
-    messagebarInstance.clear()
-    if (text.length + attachments.length > 0) {
-      // there is something to send
-      let messagesToSend: Array<Message> = []
-      attachments.forEach(
-        (body: string) => messagesToSend.push({ type: 'image', body, reply_to })
-        )
-      messagesToSend.push({ type: 'text', body: text, reply_to })
-      messagebarInstance.focus()
-      messagesToSend.forEach((msg: Message) => {
-        $peers.forEach(
-          (peer: ConnectedPeer, _peerId: string) => peer.send(JSON.stringify(msg))
-          )
-      })
-    }
+// handles send message event from user
+function sendMessage(_ev) {
+
+  // create a message structure
+  let msg: Message = <Message>{
+    body: element.textContent,
+    from: $connection.peerID, // this changes between sessions
+    timestamp: Date.now(),
+    ...message
   }
 
-  const handleAttachment = (ev) => {
-    const image: string =
-        images[f7.$(ev.target).parents('label.checkbox').index()]
-    ev.target.checked
-        ? attachments.unshift(image)
-        : attachments.splice(attachments.indexOf(image), 1)
-    }
+  // generate a unique id
+  msg.id = getID([msg.body, msg.from, msg.timestamp.toString()])
 
-  const deleteAttachment = (a: string) =>
-    attachments.splice(attachments.indexOf(a), 1)
-  
-  onMount(() =>
-    f7ready(() => (messagebarInstance = messagebarComponent.instance()))
-  )
+  // check if msg is an image and set its type
+  const imageReg = /[\/.](gif|jpg|jpeg|tiff|png)$/i
+  msg.type = imageReg.test(msg.body)?'image':'text'
+
+  // find those who were here around a week 
+  let filteredPeers = []
+  $seens.forEach((session: Session, peerId: string) => {
+    if((Date.now() - session.timestamp) < 7*24*60*60*1000)
+      filteredPeers.push(peerId) // seen last week
+  })
+
+  // send them a message
+  filteredPeers.forEach((x: string) => $peers.get(x).send(JSON.stringify(msg)))
+
+  // save in own store
+  $messages.push(msg)
+}
 
 </script>
+<div
+  bind:this={element}
+  class="inputbox bg-gray border rounded border-gray-300" 
+  contenteditable 
+  placeholder="Speak or type your message">
+</div>
+<style>
+  .inputbox {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+  }
+</style>
