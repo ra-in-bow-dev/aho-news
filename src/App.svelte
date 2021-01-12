@@ -9,18 +9,23 @@
   import { threads, messages, messagesOrdered, replyTo } from './store/message'
   import type { Session } from './generators/session'
   import { connection, peers } from './store/network'
-  import { seens, currentSwarm, content, settings } from './store/session'
+  import {
+    seens,
+    currentSwarm,
+    content,
+    settings,
+    sessions,
+  } from './store/session'
   import generateUsername from './generators/username'
   import generateUserpic from './generators/userpic'
   import generateMessageId from './generators/uid'
 
+  const weekOld = (ts) => Date.now() - ts < 7 * 24 * 60 * 60 * 1000
   const name = 'aho-news' // App name
   const id = 'org.welcomehome.ahonews'
   const rates: Map<string, Array<Message>> = new Map()
   const fixes: Map<string, Array<Message>> = new Map()
   let processedMessages: Array<Message> = []
-
-  const weekOld = (ts) => Date.now() - ts < 7 * 24 * 60 * 60 * 1000
 
   const getFirstReply = (cur: Message, prev?: Message) => {
     if (prev && cur.id !== prev.id && prev.reply_to === null) {
@@ -59,13 +64,15 @@
     )
 
     let sss = await JSON.parse(localStorage.getItem('seens') || '[]')
-    sss.forEach(
-      (session) =>
-        weekOld(session.timestamp) && $seens.set(session.peerId, session)
-    )
+    sss.forEach((session) => {
+      if (weekOld(session.timestamp)) $seens.set(session.peerId, session)
+    })
+
+    console.log($seens)
 
     // connection is a promise
     if (await $connection) {
+      console.log('connection is ok')
       $connection.removeAllListeners()
 
       const seenHandler = async (peerId: string) => {
@@ -80,12 +87,16 @@
           userpic,
         }
         $seens.set(peerId, session) // last seen always updating
+        console.log(`peer: seen ${peerId}`)
+        $sessions = Array.from($seens.values()).filter((s) =>
+          weekOld(s.timestamp)
+        )
       }
 
       const peerHandler = (peer: ConnectedPeer) => {
         if (!$peers.get(peer.id)) {
-          console.info('peer: ' + peer.id)
-          console.info('peer: sending own content to the new peer')
+          console.info('peer: announce for ' + peer.id)
+          // console.info('peer: sending own content to the new peer')
           peer.send(JSON.stringify($content)) // simple key:string -> value:markdown_content
 
           const msgHandler = async (ev: MessageEvent<any>) => {
@@ -140,7 +151,7 @@
 
 <main class="flex flex-col h-screen justify-between">
   <section class="seen">
-    <NetworkBar sessions={Array.from($seens.values())} />
+    <NetworkBar />
   </section>
   <section class="flex-grow messages">
     {#each $threads as message}
@@ -157,12 +168,6 @@
 </main>
 
 <style>
-  :global(body) {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-  }
-
   main {
     flex: 1; /* Or flex-grow: 1;*/
   }

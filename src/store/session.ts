@@ -26,6 +26,7 @@ export const profile: Writable<Partial<Session>> = writable({})
 export const content: Writable<Message[]> = writable([])
 export const settings: Writable<Settings> = writable(defaultSettings)
 export const seens: Writable<Map<string, Session>> = writable(new Map())
+export const sessions: Writable<Session[]> = writable([])
 
 // used for announce
 export const mySession: Readable<Promise<Session>> = derived(

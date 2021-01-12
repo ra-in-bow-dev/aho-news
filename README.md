@@ -15,7 +15,7 @@ Powered by
 License
 -------
 
-Licensed under the [CC BY-NC](https://creativecommons.org/licenses/by-nc/2.0/)
+Licensed under the MIT.
 
 Thanks
 ------
