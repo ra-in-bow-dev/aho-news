@@ -1,6 +1,6 @@
 <script lang="ts">
   import NetworkBar from './components/NetworkBar.svelte'
-  import { onMount } from 'svelte/internal'
+  import { onMount, onDestroy } from 'svelte/internal'
   import './global.css'
   import type { ConnectedPeer } from 'switchboard.js'
   import MessageView from './components/MessageView.svelte'
@@ -12,7 +12,7 @@
   import { seens, currentSwarm, content, settings } from './store/session'
   import generateUsername from './generators/username'
   import generateUserpic from './generators/userpic'
-  import generateMessage from './generators/message'
+  import generateMessageId from './generators/uid'
 
   export let sessions: Session[]
 
@@ -105,14 +105,19 @@
           peer.send(JSON.stringify($content)) // simple key:string -> value:markdown_content
 
           const msgHandler = async (ev: MessageEvent<any>) => {
-            // TODO: P2P-CDN datachannel
-            console.debug(ev)
+            const datachannel = ev.target
             // parse
-            let msg: Message = await JSON.parse(ev.data)
-            msg.from = peer.id
+            let msg: Message = await JSON.parse(ev.data) // { body reply_to }
+            const timestamp = Date.now()
             msg = <Message>{
-              ...msg,
-              ...generateMessage(), // auto fields here?
+              timestamp,
+              from: peer.id,
+              id: generateMessageId([
+                peer.id,
+                msg.body,
+                timestamp.toString(),
+                '#aho-news',
+              ]),
             }
             // save new message
             $messages.set(msg.id, msg)
@@ -137,6 +142,11 @@
       $connection.swarm($currentSwarm)
       // console.debug($connection)
     }
+  })
+
+  onDestroy(async () => {
+    localStorage.setItem('seens', JSON.stringify($seens))
+    localStorage.setItem('settings', JSON.stringify($settings))
   })
 </script>
 

@@ -17,7 +17,7 @@ export interface Settings {
   username?: string
 }
 
-const defaultSettings: Settings = <Settings><unknown>{
+export const defaultSettings: Settings = <Settings><unknown>{
   width: 800, height: 600, fullscreen: false
 }
 

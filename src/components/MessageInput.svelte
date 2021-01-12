@@ -4,21 +4,28 @@
   import { replyTo, messages } from '../store/message'
   import { seens } from '../store/session'
   import { connection, peers } from '../store/network'
-  import getMessage from '../generators/message'
   import { getLightColor } from '../generators/color'
   import marked from 'marked'
+  import generateMessageId from '../generators/uid'
 
   let element
 
   // handles send message event from user
   function sendMessage(_ev) {
     // create a message structure
-    const msg: Message = <Message>{
-      ...getMessage(),
+    const timestamp = Date.now()
+    let msg: Message = <Message>{
       body: element.textContent,
+      reply_to: $replyTo,
       from: $connection.peerID, // this changes between sessions
+      timestamp,
     }
-
+    msg.id = generateMessageId([
+      msg.from,
+      msg.body,
+      timestamp.toString(),
+      '#aho-news',
+    ])
     // find those who were here around a week
     const filteredPeers = [] // mostly everyone
     $seens.forEach((session: Session, peerId: string) => {
