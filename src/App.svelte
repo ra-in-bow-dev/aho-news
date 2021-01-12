@@ -1,25 +1,40 @@
 <script lang="ts">
+  import marked from 'marked'
   import { onMount } from 'svelte/internal'
-  import "./global.css"
+  import './global.css'
   import type { ConnectedPeer } from 'switchboard.js'
   import MessageView from './components/MessageView.svelte'
   import MessageInput from './components/MessageInput.svelte'
   import type { Message } from './store/message'
+  import { threads, messages, messagesOrdered } from './store/message'
+  import type { Session } from './store/session'
   import { connection } from './store/network'
-  import { peers, seens, threads, messages, settings, Settings } from './store/session'
-  
-  const name: string = 'aho-news' // App name
-  const id: string = 'org.welcomehome.ahonews'
+  import {
+    peers,
+    seens,
+    settings,
+    currentSwarm,
+    content,
+  } from './store/session'
+  import { hash } from 'spark-md5'
+  import generateUsername from './generators/username'
+  import generateUserpic from './generators/userpic'
 
-  let rates: Map<string, Array<Message>> = new Map()
-  let fixes: Map<string, Array<Message>> = new Map()
+  const name = 'aho-news' // App name
+  const id = 'org.welcomehome.ahonews'
+  let connected = false
+  let sessions = []
+  const rates: Map<string, Array<Message>> = new Map()
+  const fixes: Map<string, Array<Message>> = new Map()
   let processedMessages: Array<Message> = []
-  let enteredMessage: Message = <Message>{
-    type: 'text', 
-    body: '', 
-    id: null, 
-    reply_to: null, 
-    from: null
+
+  const enteredMessage: Message = <Message>{
+    timestamp: Date.now(),
+    type: 'text',
+    body: '',
+    id: null,
+    reply_to: null,
+    from: null,
   }
 
   const getFirstReply = (cur: Message, prev?: Message) => {
@@ -28,113 +43,141 @@
     }
     if (!prev) {
       // start a recursion
-      cur = $messages.find((m) => m.reply_to === cur.id)
-      prev = $messages.find((m) => m.id === cur.reply_to)
+      cur = $messagesOrdered.find((m) => m.reply_to === cur.id)
+      prev = $messagesOrdered.find((m) => m.id === cur.reply_to)
       return getFirstReply(cur, prev)
     } else {
       cur = prev
-      prev = $messages.find((m) => m.reply_to === prev.id)
+      prev = $messagesOrdered.find((m) => m.reply_to === prev.id)
       return getFirstReply(cur, prev)
     }
   }
 
-  $: if($messages) {
-    //let ts1 = Date.now()
+  $: if ($messages) {
     // pick only the one thread
     // WARNING: check computional cost here
-    processedMessages = $messages.filter((m) => getFirstReply(m).id === enteredMessage.reply_to)
+    processedMessages = $messagesOrdered.filter(
+      (m) => getFirstReply(m).id === enteredMessage.reply_to
+    )
     //console.log(`thread filtering cost: ${Date.now() - ts1}`)
-    if(processedMessages.length > 0) console.log(`${processedMessages.length} messages in the thread`)
-    // update this thread's fixes
-    processedMessages.forEach((m) => {
-      if (m.type === 'fix') fixes[m.reply_to].push(m)
-    })
-    // update this thread's rates
-    processedMessages.forEach((m) => {
-      if (m.type === 'rate') rates[m.reply_to].push(m)
-    })
+    if (processedMessages.length > 0)
+      console.log(`${processedMessages.length} messages in the thread`)
   }
 
-  let allReplied: Map<string, Message> = new Map()
+  const allReplied: Map<string, Message> = new Map()
 
   const isLastMessage = (msg: Message): boolean => {
-    $messages.forEach((m) =>
-      allReplied.set(
-        m.reply_to,
-        $messages.find((msg) => msg.id === m.reply_to)
-      )
+    $messagesOrdered.forEach((m) =>
+      allReplied.set(m.reply_to, $messages.get(m.reply_to))
     )
     return msg.id in allReplied
   }
 
   const onMessage = async (peer: ConnectedPeer, ev: MessageEvent<any>) => {
-    let msg: Message = await JSON.parse(ev.data)
+    const msg: Message = await JSON.parse(ev.data)
     msg.from = peer.id
     msg.timestamp = Date.now()
-    $messages.push(msg)
+    $messages.set(msg.id, msg)
   }
 
   const setSeen = (peerId: string) => {
-    let s = $seens.get(peerId) || {}
-    $seens.set(peerId, {...s, timestamp: Date.now()})
+    const s = $seens.get(peerId) || {}
+    $seens.set(peerId, <Session>{ ...s, timestamp: Date.now() })
   }
 
   onMount(async () => {
-    // session settings in localStorage
-    $settings = JSON.parse(localStorage.getItem("settings"))
-    settings.subscribe(val => localStorage.setItem("settings", JSON.stringify(val)))
-    // add standalone detecting class if needed
-    if ('standalone' in window.navigator) document.body.classList.add('standalone')
+    // load settings
+    $settings = JSON.parse(localStorage.getItem('settings'))
+    settings.subscribe((val) =>
+      localStorage.setItem('settings', JSON.stringify(val))
+    )
+
     // connection is a promise
-    await $connection
-    $connection.on('connected', () => console.log('p2p connected!'))
-    $connection.on('kill', () => console.log('p2p connection killed.'))
-    $connection.on('warn', console.warn)
-    $connection.on('peer-seen', (pid: string) => setSeen(pid))
-    $connection.on('peer', (peer: ConnectedPeer) => {
-      $peers.set(peer.id, peer)
-      // TODO: peer.on('stream', stream => { .. })
-      // TODO: peer.on('data', data => { .. })
-      peer.on('message', async (ev) => await onMessage(peer, ev))
-      peer.on('error', console.error)
-      peer.on('close', () => $peers.delete(peer.id))
-    })
-    // always use the same swarm in this app
-    $connection.swarm(name)
-    console.debug($connection)
+    if (await $connection) {
+      connected = false
+      $connection.removeAllListeners()
+
+      const seenHandler = async (peerId: string) => {
+        const old = $seens.get(peerId)
+        const timestamp = old?.timestamp || Date.now()
+        const username = old?.username || (await generateUsername())
+        const userpic = old?.userpic || (await generateUserpic()) // TODO: the way to edit userpic
+        const session = <Session>{
+          peerId,
+          timestamp,
+          username,
+          userpic,
+        }
+        $seens.set(peerId, session) // last seen always updating
+        sessions = Array.from($seens.values())
+      }
+
+      const peerHandler = (peer: ConnectedPeer) => {
+        if (!$peers.get(peer.id)) {
+          console.info('peer: ' + peer.id)
+
+          const announce = async () => peer.send(JSON.stringify($content)) // simple key:string -> value:markdown_content
+
+          const msgHandler = async (ev: MessageEvent<any>) => {
+            // TODO: P2P-CDN datachannel
+            console.debug(ev)
+            // parse
+            const msg: Message = await JSON.parse(ev.data)
+            // auto fields
+            msg.from = peer.id
+            msg.timestamp = Date.now()
+            msg.id = hash(
+              [msg.from, msg.body, msg.timestamp].join('') +
+                Math.random().toString()
+            )
+            // save new message
+            $messages.set(msg.id, msg)
+          }
+          $peers.set(peer.id, peer)
+          // TODO: peer.on('stream', stream => { .. })
+          // TODO: peer.on('data', data => { .. })
+          peer.on('message', msgHandler)
+          peer.on('error', console.error)
+          peer.once('close', () => $peers.delete(peer.id))
+        }
+      }
+
+      $connection.once('connected', () => console.log('p2p connected!'))
+      $connection.once('kill', () => console.log('p2p connection killed.'))
+      // $connection.on('warn', console.warn)
+      $connection.on('peer-seen', seenHandler)
+      $connection.on('peer', peerHandler)
+
+      console.info('connecting to #' + $currentSwarm)
+      sessions = []
+      $connection.swarm($currentSwarm)
+      // console.debug($connection)
+    }
   })
-  
-  
-  $: if($seens) {
-
-  }
 </script>
-
-<style>
-</style>
 
 <main class="w-full h-full flex">
   <div class="w-full h-full flex flex-col sm:flex-row">
     <div class="seen">
       {#each [...$seens.keys()] as peer}
-      {#if (Date.now() - $seens.get(peer).timestamp) < 10*60*1000 }
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill={`#${peer.slice(3)}`} >
-        <circle cx="50" cy="50" r="50"/>
-      </svg>
-      {/if}
+        {#if Date.now() - $seens.get(peer).timestamp < 10 * 60 * 1000}
+          <svg
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="{`#${peer.slice(3)}`}"
+          >
+            <circle cx="50" cy="50" r="50"></circle>
+          </svg>
+        {/if}
       {/each}
     </div>
     <div class="messages">
       {#each $threads as m}
-        <MessageView message={m} mode='bar'>
-          {#if m.type === 'image'}
-            <img src={m.body} alt='pic' />
-          {:else}
-            <p>${m.body}</p>
-          {/if}
+        <MessageView message="{m}" mode="bar">
+          {@html marked(m.body)}
         </MessageView>
       {/each}
     </div>
-    <MessageInput  />
+    <MessageInput />
   </div>
 </main>

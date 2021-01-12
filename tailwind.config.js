@@ -7,7 +7,7 @@ module.exports = {
       "./src/**/*.html",
     ]
   },
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'class', // or 'media'
   theme: {
     extend: {},
   },

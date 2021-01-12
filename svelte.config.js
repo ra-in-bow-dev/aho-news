@@ -1,2 +1,2 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-module.exports = { preprocess: require('svelte-preprocess')() }
+const auto = require("svelte-preprocess")
+module.exports = { preprocess: auto() }

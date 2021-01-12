@@ -1,2 +1,10 @@
-// Taken from: https://tailwindcss.com/docs/installation#using-tailwind-with-postcss
-module.exports = { minify: true, plugins: [require('tailwindcss')] }
+module.exports = {
+    minify: true,
+    extract: true,
+    plugins: [
+      require('tailwindcss'),
+      require('autoprefixer'),
+      require('cssnano')
+    ]
+  }
+  

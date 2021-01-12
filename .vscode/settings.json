@@ -1,0 +1,13 @@
+{
+	"eslint.packageManager": "pnpm",
+	"eslint.validate": ["svelte", "json", "jsonc"],
+	"editor.formatOnSave": true,
+	"eslint.format.enable": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"css.validate": false, // Disable css built-in lint
+	"stylelint.enable": true, // Enable sytlelint
+	"prettier.requireConfig": true,
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode"
+	}
+}

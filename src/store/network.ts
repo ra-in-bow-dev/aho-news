@@ -7,7 +7,7 @@ export const options: SBClientOptions = {
     'wss://tracker.sloppyta.co:443/announce',
     'wss://tracker.files.fm:7073/announce',
     'wss://tracker.openwebtorrent.com',
-  ]
+  ],
 }
 
 export const connection: Writable<SBType> = writable(new Switchboard(options))

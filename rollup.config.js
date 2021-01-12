@@ -1,35 +1,54 @@
-import svelte from 'rollup-plugin-svelte'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
+import typescriptPlugin from '@rollup/plugin-typescript'
+import json from '@rollup/plugin-json'
+import svelte from 'rollup-plugin-svelte'
 import livereload from 'rollup-plugin-livereload'
 import { terser } from 'rollup-plugin-terser'
-import sveltePreprocess from 'svelte-preprocess'
-import typescript from '@rollup/plugin-typescript'
 import postcss from 'rollup-plugin-postcss'
 
+const dev = !!process.env.ROLLUP_WATCH
 const postcssConfig = require('./postcss.config')
-const dev = process.env.ROLLUP_WATCH
+const svelteConfig = require('./svelte.config')
+const tsConfig = require('./tsconfig.json')
 
 export default {
-	input: 'src/index.ts',
-	output: {
-		sourcemap: dev,
-		format: 'iife',
-		name: 'app',
-		file: 'public/bundle.js'
-	},
-	plugins: [
-		svelte({
-			emitCss: false,
-			compilerOptions: { css: false }, // o => o.write('public/bundle.css') },
-			preprocess: sveltePreprocess(), //{ postcss: { extract: 'public/bundle.css' } })
-		}),
-		postcss({ ...postcssConfig, extract: 'bundle.css' }),
-		resolve({ browser: true, dedupe: ['svelte'] }),
-		commonjs(),
-		typescript({ sourceMap: !!dev }),
-		dev && livereload('public'),
-		!dev && terser()
-	],
-	watch: { clearScreen: false }
+  input: 'src/index.ts',
+  output: {
+    sourcemap: true,
+    format: 'iife',
+    name: 'app',
+    file: 'public/bundle.js',
+  },
+  plugins: [
+    svelte({
+      compilerOptions: { dev },
+      ...svelteConfig,
+      emitCss: true,
+    }),
+    postcss(postcssConfig),
+    json(),
+    resolve({ browser: true, dedupe: ['svelte'] }),
+    commonjs({ transformMixedEsModules: true }),
+    typescriptPlugin({ sourceMap: dev, ...tsConfig.compilerOptions }),
+    dev && serve(),
+    dev && livereload('public'),
+    !dev && terser(),
+  ],
+}
+
+function serve() {
+  let started = false
+  console.log('starting server...')
+  return {
+    writeBundle() {
+      if (!started) {
+        started = true
+        require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
+          stdio: ['ignore', 'inherit', 'inherit'],
+          shell: true,
+        })
+      }
+    },
+  }
 }
