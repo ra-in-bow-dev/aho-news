@@ -14,13 +14,13 @@
   import generateUserpic from './generators/userpic'
   import generateMessageId from './generators/uid'
 
-  export let sessions: Session[]
-
   const name = 'aho-news' // App name
   const id = 'org.welcomehome.ahonews'
   const rates: Map<string, Array<Message>> = new Map()
   const fixes: Map<string, Array<Message>> = new Map()
   let processedMessages: Array<Message> = []
+
+  const weekOld = (ts) => Date.now() - ts < 7 * 24 * 60 * 60 * 1000
 
   const getFirstReply = (cur: Message, prev?: Message) => {
     if (prev && cur.id !== prev.id && prev.reply_to === null) {
@@ -49,27 +49,6 @@
       console.log(`${processedMessages.length} messages in the thread`)
   }
 
-  const allReplied: Map<string, Message> = new Map()
-
-  const isLastMessage = (msg: Message): boolean => {
-    $messagesOrdered.forEach((m) =>
-      allReplied.set(m.reply_to, $messages.get(m.reply_to))
-    )
-    return msg.id in allReplied
-  }
-
-  const onMessage = async (peer: ConnectedPeer, ev: MessageEvent<any>) => {
-    const msg: Message = await JSON.parse(ev.data)
-    msg.from = peer.id
-    msg.timestamp = Date.now()
-    $messages.set(msg.id, msg)
-  }
-
-  const setSeen = (peerId: string) => {
-    const s = $seens.get(peerId) || {}
-    $seens.set(peerId, <Session>{ ...s, timestamp: Date.now() })
-  }
-
   onMount(async () => {
     'serviceWorker' in navigator &&
       navigator.serviceWorker.register('/service-worker.js')
@@ -77,6 +56,12 @@
     $settings = JSON.parse(localStorage.getItem('settings'))
     settings.subscribe((val) =>
       localStorage.setItem('settings', JSON.stringify(val))
+    )
+
+    let sss = await JSON.parse(localStorage.getItem('seens') || '[]')
+    sss.forEach(
+      (session) =>
+        weekOld(session.timestamp) && $seens.set(session.peerId, session)
     )
 
     // connection is a promise
@@ -95,7 +80,6 @@
           userpic,
         }
         $seens.set(peerId, session) // last seen always updating
-        sessions = Array.from($seens.values())
       }
 
       const peerHandler = (peer: ConnectedPeer) => {
@@ -138,14 +122,18 @@
       $connection.on('peer', peerHandler)
 
       console.info('connecting to #' + $currentSwarm)
-      sessions = []
       $connection.swarm($currentSwarm)
       // console.debug($connection)
     }
   })
 
   onDestroy(async () => {
-    localStorage.setItem('seens', JSON.stringify($seens))
+    // find those who were here around a week
+    const filteredPeers = [] // mostly everyone
+    $seens.forEach((session: Session, peerId: string) => {
+      if (weekOld(session.timestamp)) filteredPeers.push(peerId) // seen last week
+    })
+    localStorage.setItem('seens', JSON.stringify(filteredPeers))
     localStorage.setItem('settings', JSON.stringify($settings))
   })
 </script>
@@ -155,8 +143,12 @@
     <NetworkBar sessions={Array.from($seens.values())} />
   </section>
   <section class="flex-grow messages">
-    {#each $threads as m}
-      <MessageView message={m} mode="bar" />
+    {#each $threads as message}
+      <MessageView
+        {message}
+        mode="bar"
+        on:click={() => ($replyTo = message.id)}
+      />
     {/each}
   </section>
   <section class="input">
