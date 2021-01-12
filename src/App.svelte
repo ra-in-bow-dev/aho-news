@@ -1,7 +1,6 @@
 <script lang="ts">
   import NetworkBar from './components/NetworkBar.svelte'
   import { onMount, onDestroy } from 'svelte/internal'
-  import './global.css'
   import type { ConnectedPeer } from 'switchboard.js'
   import MessageView from './components/MessageView.svelte'
   import MessageInput from './components/MessageInput.svelte'

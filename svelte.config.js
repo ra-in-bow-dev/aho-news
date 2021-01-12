@@ -1,2 +1,4 @@
-const auto = require("svelte-preprocess")
-module.exports = { preprocess: auto() }
+const { globalStyle, postcss } = require("svelte-preprocess")
+const { typescript } = require('svelte-preprocess-esbuild')
+const postcssConfig = require('./postcss.config')
+module.exports = { preprocess: [ typescript(), postcss(postcssConfig), globalStyle() ] }
