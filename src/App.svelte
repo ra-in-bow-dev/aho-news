@@ -17,7 +17,7 @@
     sessions,
   } from './store/session'
   import generateUsername from './generators/username'
-  import generateUserpic from './generators/userpic'
+  // import generateUserpic from './generators/userpic'
   import generateMessageId from './generators/uid'
 
   const weekOld = (ts) => Date.now() - ts < 7 * 24 * 60 * 60 * 1000
@@ -79,12 +79,12 @@
         const old = $seens.get(peerId)
         const timestamp = old?.timestamp || Date.now()
         const username = old?.username || (await generateUsername())
-        const userpic = old?.userpic || (await generateUserpic()) // TODO: the way to edit userpic
+        // const userpic = old?.userpic || (await generateUserpic()) // TODO: the way to edit userpic
         const session = <Session>{
           peerId,
           timestamp,
           username,
-          userpic,
+          // userpic,
         }
         $seens.set(peerId, session) // last seen always updating
         console.log(`peer: seen ${peerId}`)
@@ -166,9 +166,3 @@
     <MessageInput />
   </section>
 </main>
-
-<style>
-  main {
-    flex: 1; /* Or flex-grow: 1;*/
-  }
-</style>

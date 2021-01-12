@@ -22,7 +22,5 @@ export const messagesOrdered: Readable<Array<Message>> = derived(
 // sorted by timestamp and filtered by reply_to===null messages
 export const threads: Readable<Array<Message>> = derived(
   [messagesOrdered],
-  ([$messagesOrdered]) =>
-    $messagesOrdered
-      .filter((m) => !m.reply_to)
+  ([$messagesOrdered]) => $messagesOrdered.filter((m) => !m.reply_to)
 )

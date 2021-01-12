@@ -18,7 +18,7 @@
 
 <style>
   .peer-circle {
-    display: inline-block;
+    display: inline-flex;
     width: 2vw;
     height: 2vw;
     border-radius: 50%;

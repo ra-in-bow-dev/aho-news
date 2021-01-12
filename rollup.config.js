@@ -24,6 +24,9 @@ export default {
     svelte({
       compilerOptions: { dev },
       ...svelteConfig,
+      css: css => {
+        css.write('public/bundle.css')
+      },
       emitCss: true,
     }),
     postcss(postcssConfig),

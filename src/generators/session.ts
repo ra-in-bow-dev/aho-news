@@ -1,4 +1,4 @@
-import generateUserpic from '../generators/userpic'
+// import generateUserpic from '../generators/userpic'
 import generateUsername from '../generators/username'
 
 // any user has session
@@ -7,7 +7,7 @@ export interface Session {
     timestamp: number
     swarm: string
     username: string
-    userpic: string
+    userpic?: string
   }
 
 export default async function (
@@ -19,6 +19,6 @@ export default async function (
         swarm,
         timestamp: Date.now(),
         username: username || await generateUsername(),
-        userpic: await generateUserpic()
+        // userpic: await generateUserpic()
     }
 }
