@@ -1,41 +1,26 @@
 <script lang="ts">
-  import marked from 'marked'
+  import NetworkBar from './components/NetworkBar.svelte'
   import { onMount } from 'svelte/internal'
   import './global.css'
   import type { ConnectedPeer } from 'switchboard.js'
   import MessageView from './components/MessageView.svelte'
   import MessageInput from './components/MessageInput.svelte'
   import type { Message } from './store/message'
-  import { threads, messages, messagesOrdered } from './store/message'
-  import type { Session } from './store/session'
-  import { connection } from './store/network'
-  import {
-    peers,
-    seens,
-    settings,
-    currentSwarm,
-    content,
-  } from './store/session'
-  import { hash } from 'spark-md5'
+  import { threads, messages, messagesOrdered, replyTo } from './store/message'
+  import type { Session } from './generators/session'
+  import { connection, peers } from './store/network'
+  import { seens, currentSwarm, content, settings } from './store/session'
   import generateUsername from './generators/username'
   import generateUserpic from './generators/userpic'
+  import generateMessage from './generators/message'
+
+  export let sessions: Session[]
 
   const name = 'aho-news' // App name
   const id = 'org.welcomehome.ahonews'
-  let connected = false
-  let sessions = []
   const rates: Map<string, Array<Message>> = new Map()
   const fixes: Map<string, Array<Message>> = new Map()
   let processedMessages: Array<Message> = []
-
-  const enteredMessage: Message = <Message>{
-    timestamp: Date.now(),
-    type: 'text',
-    body: '',
-    id: null,
-    reply_to: null,
-    from: null,
-  }
 
   const getFirstReply = (cur: Message, prev?: Message) => {
     if (prev && cur.id !== prev.id && prev.reply_to === null) {
@@ -57,7 +42,7 @@
     // pick only the one thread
     // WARNING: check computional cost here
     processedMessages = $messagesOrdered.filter(
-      (m) => getFirstReply(m).id === enteredMessage.reply_to
+      (m) => getFirstReply(m).id === $replyTo
     )
     //console.log(`thread filtering cost: ${Date.now() - ts1}`)
     if (processedMessages.length > 0)
@@ -86,7 +71,9 @@
   }
 
   onMount(async () => {
-    // load settings
+    'serviceWorker' in navigator &&
+      navigator.serviceWorker.register('/service-worker.js')
+
     $settings = JSON.parse(localStorage.getItem('settings'))
     settings.subscribe((val) =>
       localStorage.setItem('settings', JSON.stringify(val))
@@ -94,7 +81,6 @@
 
     // connection is a promise
     if (await $connection) {
-      connected = false
       $connection.removeAllListeners()
 
       const seenHandler = async (peerId: string) => {
@@ -115,21 +101,19 @@
       const peerHandler = (peer: ConnectedPeer) => {
         if (!$peers.get(peer.id)) {
           console.info('peer: ' + peer.id)
-
-          const announce = async () => peer.send(JSON.stringify($content)) // simple key:string -> value:markdown_content
+          console.info('peer: sending own content to the new peer')
+          peer.send(JSON.stringify($content)) // simple key:string -> value:markdown_content
 
           const msgHandler = async (ev: MessageEvent<any>) => {
             // TODO: P2P-CDN datachannel
             console.debug(ev)
             // parse
-            const msg: Message = await JSON.parse(ev.data)
-            // auto fields
+            let msg: Message = await JSON.parse(ev.data)
             msg.from = peer.id
-            msg.timestamp = Date.now()
-            msg.id = hash(
-              [msg.from, msg.body, msg.timestamp].join('') +
-                Math.random().toString()
-            )
+            msg = <Message>{
+              ...msg,
+              ...generateMessage(), // auto fields here?
+            }
             // save new message
             $messages.set(msg.id, msg)
           }
@@ -156,28 +140,28 @@
   })
 </script>
 
-<main class="w-full h-full flex">
-  <div class="w-full h-full flex flex-col sm:flex-row">
-    <div class="seen">
-      {#each [...$seens.keys()] as peer}
-        {#if Date.now() - $seens.get(peer).timestamp < 10 * 60 * 1000}
-          <svg
-            viewBox="0 0 100 100"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="{`#${peer.slice(3)}`}"
-          >
-            <circle cx="50" cy="50" r="50"></circle>
-          </svg>
-        {/if}
-      {/each}
-    </div>
-    <div class="messages">
-      {#each $threads as m}
-        <MessageView message="{m}" mode="bar">
-          {@html marked(m.body)}
-        </MessageView>
-      {/each}
-    </div>
+<main class="flex flex-col h-screen justify-between">
+  <section class="seen">
+    <NetworkBar sessions={Array.from($seens.values())} />
+  </section>
+  <section class="flex-grow messages">
+    {#each $threads as m}
+      <MessageView message={m} mode="bar" />
+    {/each}
+  </section>
+  <section class="input">
     <MessageInput />
-  </div>
+  </section>
 </main>
+
+<style>
+  :global(body) {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1; /* Or flex-grow: 1;*/
+  }
+</style>

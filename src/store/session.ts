@@ -1,28 +1,35 @@
-import { Writable, writable } from 'svelte/store'
-import type { ConnectedPeer } from 'switchboard.js'
+import { Readable, derived, Writable, writable } from 'svelte/store'
+import generateSession from '../generators/session'
+import type { Session } from '../generators/session'
 import type { Message } from './message'
+import { connection } from './network'
 
-export const currentSwarm: Writable<string> = writable('aho-news')
+export const username: Writable<string> = writable('me')
+export const stream: Writable<MediaStream> = writable(null)
+export const speaking: Writable<boolean> = writable(false)
+export const currentSwarm: Writable<string> = writable('aho-news') 
 
-// session is a temporary user's profile store
-export interface Session {
-  peerId: string
-  timestamp: number
-  username?: string
-  userpic?: string
-  notes?: string[]
-}
 
-// settings
 export interface Settings {
+  width: number
+  height: number
+  fulscreen: boolean
   username?: string
-  userpic?: string
 }
-// localStorage
-export const settings: Writable<Settings> = writable({})
-//
-export const peers: Writable<Map<string, ConnectedPeer>> = writable(new Map())
-// each peer has an active session
+
+const defaultSettings: Settings = <Settings><unknown>{
+  width: 800, height: 600, fullscreen: false
+}
+
+// can set userpic and username
+export const profile: Writable<Partial<Session>> = writable({})
+export const content: Writable<Message[]> = writable([])
+export const settings: Writable<Settings> = writable(defaultSettings)
 export const seens: Writable<Map<string, Session>> = writable(new Map())
 
-export const content: Writable<Map<string, string>> = writable(new Map())
+// used for announce
+export const mySession: Readable<Promise<Session>> = derived(
+  [connection, profile, currentSwarm],
+  async ([$connection, $profile, $currentSwarm]): Promise<Session> =>
+    <Session>{ ...(await generateSession($connection.peerID, $currentSwarm)), ...$profile }
+)

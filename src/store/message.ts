@@ -8,7 +8,7 @@ export interface Message {
   from: string // author peer id
 }
 
-export const editingMessage: Writable<string> = writable('')
+export const replyTo: Writable<string> = writable('') // a globa one msg id which ui is using
 
 export const messages: Writable<Map<string, Message>> = writable(new Map())
 
@@ -25,5 +25,4 @@ export const threads: Readable<Array<Message>> = derived(
   ([$messagesOrdered]) =>
     $messagesOrdered
       .filter((m) => !m.reply_to)
-      .sort((a, b) => a.timestamp > b.timestamp ? 1 : -1)
 )

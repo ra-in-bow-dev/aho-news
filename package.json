@@ -2,8 +2,11 @@
   "name": "aho-news",
   "version": "0.0.3",
   "main": "src/index.ts",
-  "author": "Untone <anton.rewin@gmail.com>",
-  "license": "CC-BY-NC",
+  "contributors": [
+    "Untone <anton.rewin@gmail.com>",
+    "DanChristos <me@danchristos.online>"
+  ],
+  "license": "MIT",
   "peerDependencies": {
     "rollup": "^2.x.x",
     "svelte": "^3.29.7",

@@ -1,0 +1,11 @@
+{
+    "name": "Aho! News",
+    "short_name": "Aho! News",
+    "theme_color": "#5bd1d7",
+    "background_color": "#f6f5f5",
+    "display": "standalone",
+    "Scope": "/",
+    "start_url": "/index.html",
+    "icons": [],
+    "splash_pages": null
+  }

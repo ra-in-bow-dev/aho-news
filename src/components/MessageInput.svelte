@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type { Session } from '../store/session'
+  import type { Session } from '../generators/session'
   import type { Message } from '../store/message'
-  import { peers, seens } from '../store/session'
-  import { messages } from '../store/message'
+  import { replyTo, messages } from '../store/message'
+  import { seens } from '../store/session'
+  import { connection, peers } from '../store/network'
   import getMessage from '../generators/message'
-  import { connection } from '../store/network'
   import { getLightColor } from '../generators/color'
+  import marked from 'marked'
 
   let element
 
@@ -35,18 +36,25 @@
   }
 </script>
 
-<div
-  bind:this={element}
-  style={`background-color:${getLightColor()}; opacity: 0.8;`}
-  class="inputbox bg-gray border rounded border-gray-300"
-  contenteditable="true"
-  placeholder="Type your message"
-/>
-<button on:click={sendMessage}>send</button>
+<section class="message-input">
+  {#if $replyTo}
+    <div class="message-reply-to">
+      <h5>Reply to:</h5>
+      {@html marked($messages.get($replyTo).body)}
+    </div>
+  {/if}
+  <div
+    bind:this={element}
+    style={`background-color:${getLightColor()}; opacity: 0.8;`}
+    class="inputbox w-full h-full"
+    contenteditable="true"
+    placeholder="Type your message"
+  />
+  <button on:click={sendMessage}>send</button>
+</section>
 
 <style>
   .inputbox {
-    position: fixed;
     display: flex;
     margin-top: 90%;
     width: 100%;
